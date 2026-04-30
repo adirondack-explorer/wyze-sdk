@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import distutils.util
 import json
 import logging
 from abc import ABCMeta
 from datetime import datetime
 from typing import Any, Optional, Sequence, Set, Union
 
-from wyze_sdk.models import JsonObject, PropDef, epoch_to_datetime
+from wyze_sdk.models import JsonObject, PropDef, epoch_to_datetime, strtobool
 
 # -------------------------------------------------
 # Base Classes
@@ -35,7 +34,10 @@ class DeviceModels(object):
     MOTION_SENSOR = ['PIR3U', 'PIR2U']
     VACUUM = ['JA_RO2']
     CAMERA = CAMERA_V1 + CAMERA_V2 + CAMERA_V3 + CAMERA_OUTDOOR
-    SCALE = ['JA.SC', 'JA.SC2']
+    SCALE_ = ['JA.SC', 'JA.SC2']
+    SCALE_S = ['WL_SC2']
+    SCALE_X = ['WL_SC3']
+    SCALE = SCALE_ + SCALE_S + SCALE_X
     WATCH = ['RA.WP1', 'RY.WA1']
     BAND = ['RY.HP1']
 
@@ -47,8 +49,10 @@ class DeviceModels(object):
 
     BULB = BULB_WHITE + BULB_WHITE_V2 + MESH_BULB
 
-    OUTDOOR_PLUG = ['WLPPO-SUB']
+    OUTDOOR_PLUG = ['WLPPO', 'WLPPO-SUB']
     PLUG = ['WLPP1', 'WLPP1CFH'] + OUTDOOR_PLUG
+
+    SWITCH = ['LD_SS1']
 
 
 class Product(object):
@@ -137,7 +141,7 @@ class DeviceProp(object):
             else:
                 try:
                     if self._definition.type == bool:
-                        value = bool(distutils.util.strtobool(str(value)))
+                        value = bool(strtobool(str(value)))
                     elif self._definition.type == dict:
                         value = json.loads(value)
                     else:
@@ -375,7 +379,18 @@ class Device(JsonObject):
                 return self._extract_property(prop_def=prop_def, others=others['property_list'])
             if 'device_params' in others and others['device_params']:
                 self.logger.debug("found non-empty device_params")
-                return self._extract_property(prop_def=prop_def, others=others['device_params'])
+                result = self._extract_property(prop_def=prop_def, others=others['device_params'])
+                if result is not None:
+                    return result
+            # Fall back to field_name when PID-based lookup finds nothing.
+            # The Wyze API changed get_object_list to return human-readable field
+            # names (e.g. "open_close_state") instead of numeric PIDs (e.g. "P1301").
+            if prop_def.field_name is not None:
+                self.logger.debug(f"PID {prop_def.pid} not found, trying field_name {prop_def.field_name}")
+                if prop_def.field_name in others:
+                    return DeviceProp(definition=prop_def, value=others[prop_def.field_name])
+                if 'device_params' in others and prop_def.field_name in others.get('device_params', {}):
+                    return DeviceProp(definition=prop_def, value=others['device_params'][prop_def.field_name])
         else:
             self.logger.debug(f"extracting property {prop_def.pid} from {others.__class__} {others}")
             for value in others:
