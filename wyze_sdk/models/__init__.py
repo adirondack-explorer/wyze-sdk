@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import distutils.util
 import logging
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, time
@@ -10,6 +9,23 @@ from functools import wraps
 from typing import Any, Callable, Iterable, Optional, Sequence, Set, Union
 
 from wyze_sdk.errors import WyzeObjectFormationError, WyzeRequestError, WyzeFeatureNotSupportedError
+
+
+def strtobool(val: str) -> int:
+    """Convert a string representation of truth to 1 or 0.
+
+    True values are: y, yes, t, true, on, 1
+    False values are: n, no, f, false, off, 0
+
+    Raises ValueError if val is anything else.
+    """
+    val = str(val).lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    else:
+        raise ValueError(f"invalid truth value {val!r}")
 
 
 def datetime_to_epoch(datetime: datetime, ms: bool = True) -> int:
@@ -212,11 +228,13 @@ class PropDef(object):
         type: Any,
         api_type: Optional[Any] = None,
         acceptable_values: Optional[Sequence[Any]] = None,
+        field_name: Optional[str] = None,
     ):
         self._pid = pid
         self._type = type
         self._api_type = api_type
         self._acceptable_values = acceptable_values
+        self._field_name = field_name
 
     @property
     def pid(self):
@@ -230,10 +248,14 @@ class PropDef(object):
     def type(self):
         return self._type
 
+    @property
+    def field_name(self) -> Optional[str]:
+        return self._field_name
+
     def validate(self, value: Any):
         if not isinstance(value, self._type):
             try:
-                value = bool(distutils.util.strtobool(str(value))) if self._type == bool else self._type(value)
+                value = bool(strtobool(str(value))) if self._type == bool else self._type(value)
             except TypeError:
                 logging.debug(f"could not cast value {value} into expected type {self._type}")
                 raise WyzeRequestError(f"{value} must be of type {self._type}")

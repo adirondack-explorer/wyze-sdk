@@ -57,19 +57,19 @@ class SensorProps(object):
 
     @classmethod
     def rssi(cls) -> PropDef:
-        return PropDef("P1304", int)
+        return PropDef("P1304", int, field_name="rssi")
 
     @classmethod
     def voltage(cls) -> PropDef:
-        return PropDef("P1329", int)
+        return PropDef("P1329", int, field_name="voltage")
 
     @classmethod
     def open_close_state(cls) -> PropDef:
-        return PropDef("P1301", bool, int, [0, 1])
+        return PropDef("P1301", bool, int, [0, 1], field_name="open_close_state")
 
     @classmethod
     def motion_state(cls) -> PropDef:
-        return PropDef("P1302", bool, int, [0, 1])
+        return PropDef("P1302", bool, int, [0, 1], field_name="motion_state")
 
 
 class Sensor(VoltageMixin, SwitchableMixin, AbstractWirelessNetworkedDevice, metaclass=ABCMeta):

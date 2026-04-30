@@ -49,6 +49,7 @@ class Client(object):
         totp_key: Optional[str] = None,
         base_url: Optional[str] = None,
         timeout: int = 30,
+        user_id: Optional[str] = None,
     ):
         #: A string used for API-based requests
         self._token = None if token is None else token.strip()
@@ -68,6 +69,9 @@ class Client(object):
         self._base_url = base_url
         #: The maximum number of seconds the client will wait to connect and receive a response from Wyze. Defaults to 30
         self.timeout = timeout
+        #: The user's unique identifier; required for user-scoped operations such as lock access codes.
+        #: Populated automatically on login, or can be supplied directly when using a pre-existing token.
+        self._user_id = user_id
 
         if self._token is None and self._email is not None:
             self.login()
