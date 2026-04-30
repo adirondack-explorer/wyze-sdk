@@ -47,6 +47,7 @@ develop-eggs/
 dist/
 docs/**/_sources
 docs/**/doctrees
+docs/html/
 downloads/
 eggs/
 .eggs/
