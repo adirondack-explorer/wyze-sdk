@@ -20,8 +20,8 @@ sys.path.insert(0, os.path.abspath('../'))
 # -- Project information -----------------------------------------------------
 
 project = 'Wyze SDK'
-copyright = '2021-2022, Shaun Tarves'
-author = 'Shaun Tarves'
+copyright = '2021-2026, Andy Doble'
+author = 'Andy Doble'
 
 # The full version, including alpha/beta/rc tags
 __version__ = None
