@@ -1,10 +1,8 @@
 # Python Wyze SDK
+
+> **Maintained fork** of [shauntarves/wyze-sdk](https://github.com/shauntarves/wyze-sdk), which is no longer actively maintained. This fork adds Python 3.12 compatibility, fixes sensor property parsing, adds room sensor support, light strip support, and plug electricity usage records. Issues and PRs welcome at [adirondack-explorer/wyze-sdk](https://github.com/adirondack-explorer/wyze-sdk/issues).
+
 A modern Python client for controlling Wyze devices.
-
-[![PyPI version][pypi-image]][pypi-url]
-[![Python Version][python-version]][pypi-url]
-[![Read the Docs][support-docs]][docs-url]
-
 
 Whether you're building a custom app, or integrating into a third-party service like Home Assistant, Wyze Developer Kit for Python allows you to leverage the flexibility of Python to get your project up and running as quickly as possible.
 
@@ -44,10 +42,10 @@ python3 --version
 
 ### Installation
 
-We recommend using [PyPI][pypi] to install the Wyze Developer Kit for Python.
+Install directly from this repository:
 
 ```bash
-$ pip install wyze-sdk
+$ pip install git+https://github.com/adirondack-explorer/wyze-sdk
 ```
 
 ### Basic Usage of the Web Client
@@ -284,10 +282,4 @@ except WyzeApiError as e:
 
 <!-- Markdown links -->
 
-[pypi-image]: https://badge.fury.io/py/wyze-sdk.svg
-[pypi-url]: https://pypi.org/project/wyze-sdk/
-[python-version]: https://img.shields.io/pypi/pyversions/wyze-sdk.svg
-[pypi]: https://pypi.org/
-[gh-issues]: https://github.com/shauntarves/wyze-sdk/issues
-[support-docs]: https://img.shields.io/badge/support-docs-brightgreen
-[docs-url]: https://wyze-sdk.readthedocs.io
+[gh-issues]: https://github.com/adirondack-explorer/wyze-sdk/issues
